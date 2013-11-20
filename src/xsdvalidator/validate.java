@@ -60,10 +60,10 @@ public class validate {
 
             try {
                 validator.validate(source);
-                System.out.println(args[0] + " validates.");
+                System.out.println(mXMLFileName + " validates.");
             }
             catch (SAXException ex) {
-                System.out.println(args[0] + " fails to validate because: \n");
+                System.out.println(mXMLFileName + " fails to validate because: \n");
                 System.out.println(ex.getMessage());
                 System.out.println();
             }
