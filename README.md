@@ -1,7 +1,7 @@
 xsd-validator
 =============
 
-Quickly and easily validates XML files against XML schema. 
+Quick and easy validation of XML files against XML schema (xsd files). 
 
 Requires Java to be installed.
 
