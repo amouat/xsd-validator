@@ -1,0 +1,200 @@
+<?xml version="1.0"?>
+
+<!-- 
+     Build file for compilation of xsdv source
+
+     Notes:     This is a build file for use with the Jakarta Ant build tool.
+     Requires:  Ant from Apache https://ant.apache.org/
+     Usage: ant <target>
+     Main targets: compile        - compiles the classes
+                   jar            - packages classes as a jar
+                   binDist        - creates binary distribution
+                   srcDist        - creates source distribution
+                   clean          - deletes the build
+                   install        - installs xsdv to system
+     Default target: compile
+  -->
+
+  <project default="compile" basedir=".">
+
+
+<!-- Global properties -->
+
+  <property name="src.dir" value="src"/>
+  <property name="install.dir" value="/usr/local"/>
+  <property name="build.dir" value="build"/>
+  <!-- <property name="lib.dir" value="lib"/> -->
+  <property name="build.compiler" value="modern"/>
+
+  <property name="package" value="xsdvalidator"/>
+  <property name="version" value="1.0" />
+
+<!-- Classpath -->
+
+  <path id="classpath">
+      <pathelement location="${build.dir}"/>
+      <pathelement location="${build.dir}/xsdv.jar"/>
+
+      <!--<fileset dir="${lib.dir}">
+	  <include name="*.jar"/>
+      </fileset>-->
+  </path>
+
+<!-- Build targets -->
+
+
+  <target name="buildDirStructure">
+    <mkdir dir="${build.dir}"/>
+  </target>
+
+
+  <target name="compileWithSource"
+          depends="compile">
+
+          <antcall target="copySource"/>
+
+  </target>
+
+  <target name="compile"
+          depends="buildDirStructure"
+          description="compiles classes">
+
+    <javac srcdir="${src.dir}" 
+           destdir="${build.dir}"
+           classpathref="classpath"
+           includeantruntime="false"/>
+
+  </target>
+
+
+  <target name="jar" 
+          depends="compile"
+          description="packages all classes into a jar">
+
+      <jar jarfile="${build.dir}/xsdv.jar" basedir="${build.dir}/"/>
+      <antcall target="cleanClasses"/>
+
+  </target>
+
+
+<!-- Build Distibutions -->
+
+  <target name="binDist"
+          depends="jar"
+          description="creates binary distribution">
+
+          <echo message="build dir = ${build.dir}"/>
+          <copy todir="${build.dir}/xsdv">
+              <fileset dir=".">
+                  <exclude name="build/"/>
+                  <exclude name="lib/"/>
+                  <exclude name="src/"/>
+                  <exclude name="INSTALL*"/>
+                  <exclude name="*gz"/>
+                  <exclude name=".*"/>
+                  <exclude name=".*/"/>
+              </fileset>
+          </copy>
+
+          <copy file="${build.dir}/xsdv.jar"
+              todir="${build.dir}/xsdv/lib/"/>
+
+
+          <antcall target="tar"/>
+
+          <gzip zipfile="${build.dir}/xsdv-${version}.tar.gz" 
+              src="${build.dir}/xsdv.tar"/>
+
+          <zip destfile="${build.dir}/xsdv-${version}.zip">
+              <zipfileset dir="${build.dir}/xsdv" filemode="755" prefix="xsdv">
+                  <include name="*sh"/>
+              </zipfileset>
+              <zipfileset dir="${build.dir}/xsdv" prefix="xsdv/">
+                  <exclude name="*sh"/>
+              </zipfileset>
+          </zip>
+
+          <delete file="${build.dir}/xsdv.tar"/>  
+
+  </target>
+
+  <target name="tar">
+          <tar tarfile="${build.dir}/xsdv.tar">
+              <tarfileset mode="755" dir="${build.dir}/xsdv"
+                  prefix="xsdv">
+                  <include name="*sh"/>
+              </tarfileset>
+              <tarfileset dir="${build.dir}/xsdv"
+                  prefix="xsdv/">
+                  <exclude name="*sh"/>
+              </tarfileset>
+          </tar>
+  </target>
+
+  <target name="srcDist"
+          depends="jar"
+          description="creates source distribution">
+
+          <antcall target="copySource"/>
+
+          <antcall target="tar"/>
+
+          <gzip zipfile="${build.dir}/xsdv-src-${version}.tar.gz"
+                src="${build.dir}/xsdv.tar"/>
+
+            <zip destfile="${build.dir}/xsdv-src-${version}.zip">
+                <zipfileset dir="${build.dir}/xsdv" filemode="755" prefix="xsdv">
+                    <include name="*sh"/>
+                </zipfileset>
+                <zipfileset dir="${build.dir}/xsdv" prefix="xsdv/">
+                    <exclude name="*sh"/>
+                </zipfileset>
+            </zip>
+
+          <delete file="${build.dir}/xsdv.tar"/>
+  </target>
+
+  <target name="copySource"
+          description="copies source files to build">
+
+          <copy todir="${build.dir}/xsdv">
+              <fileset dir=".">
+                  <exclude name="build/"/>
+                  <exclude name="*gz"/>
+                  <exclude name=".*"/>
+                  <exclude name=".*/"/>
+              </fileset>
+          </copy>
+  </target>
+
+  <!-- Install to /usr/local or given install dir -->
+
+  <target name="install"
+      description="installs xsdv to /usr/local. Run as root. Install to another location with -Dinstall.dir='/my/location/'">
+
+      <copy file="${build.dir}/xsdv.jar" todir="${install.dir}/lib"/>
+      <chmod file="${install.dir}/lib/xsdv.jar" perm="ugo+r"/>
+
+      <chmod file="xsdv_install.sh" perm="ugo+rx"/>
+
+      <copy file="xsdv_install.sh" tofile="${install.dir}/bin/xsdv/"/>
+
+      <replace file="${install.dir}/bin/xsdv" token="@INSTALL_DIR@" value="${install.dir}"/>
+      
+      <chmod file="${install.dir}/bin/xsdv" perm="ugo+rx"/>
+      
+  </target>
+
+
+  <!-- Clean targets -->
+
+  <target name="cleanClasses" description="deletes compiled classes">
+    <delete dir="${build.dir}/${package}" includeEmptyDirs="true"/>
+  </target>
+
+  <target name="clean" description="deletes build directory">
+    <delete dir="${build.dir}" includeEmptyDirs="true"/>
+  </target>
+
+</project>
+
