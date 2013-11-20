@@ -23,7 +23,7 @@
   <property name="src.dir" value="src"/>
   <property name="install.dir" value="/usr/local"/>
   <property name="build.dir" value="build"/>
-  <!-- <property name="lib.dir" value="lib"/> -->
+  <property name="lib.dir" value="lib"/>
   <property name="build.compiler" value="modern"/>
 
   <property name="package" value="xsdvalidator"/>
@@ -62,6 +62,8 @@
     <javac srcdir="${src.dir}" 
            destdir="${build.dir}"
            classpathref="classpath"
+           source="1.5"
+           target="1.5"
            includeantruntime="false"/>
 
   </target>
@@ -72,6 +74,7 @@
           description="packages all classes into a jar">
 
       <jar jarfile="${build.dir}/xsdv.jar" basedir="${build.dir}/"/>
+      <copy file="${build.dir}/xsdv.jar" todir="${lib.dir}/"/>
       <antcall target="cleanClasses"/>
 
   </target>
