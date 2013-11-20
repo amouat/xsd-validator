@@ -14,7 +14,7 @@ Usage from a Windows command prompt:
 ```dos
 xsdv test.xsd test.xml
 ```
-If you find it useful and want to install (Linux/Mac only):
+If you find it useful and want to install system wide (Linux/Mac only):
 
 ```bash
 sudo ant install
