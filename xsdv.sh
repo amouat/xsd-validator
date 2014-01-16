@@ -8,4 +8,4 @@ if [[ -n "${callPath}" ]]; then
   callPath=${callPath}/
 fi
 
-java -cp ${callPath}build:${callPath}lib/xsdv.jar xsdvalidator.validate "$@"
+java -jar ${callPath}lib/xsdv.jar "$@"
