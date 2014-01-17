@@ -70,7 +70,7 @@
 
 
   <target name="jar" 
-          depends="compile"
+          depends="clean,compile"
           description="packages all classes into a jar">
 
       <jar jarfile="${build.dir}/xsdv.jar" basedir="${build.dir}/">
