@@ -27,6 +27,7 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 public class validate {
 
@@ -61,6 +62,11 @@ public class validate {
             try {
                 validator.validate(source);
                 System.out.println(mXMLFileName + " validates.");
+            }
+            catch (SAXParseException ex) {
+                System.out.println(mXMLFileName + " fails to validate because: \n");
+                System.out.println(ex.toString());
+                System.out.println();
             }
             catch (SAXException ex) {
                 System.out.println(mXMLFileName + " fails to validate because: \n");

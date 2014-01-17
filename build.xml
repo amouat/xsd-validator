@@ -70,10 +70,14 @@
 
 
   <target name="jar" 
-          depends="compile"
+          depends="clean,compile"
           description="packages all classes into a jar">
 
-      <jar jarfile="${build.dir}/xsdv.jar" basedir="${build.dir}/"/>
+      <jar jarfile="${build.dir}/xsdv.jar" basedir="${build.dir}/">
+          <manifest>
+              <attribute name="Main-Class" value="xsdvalidator.validate"/>
+          </manifest>
+      </jar>
       <copy file="${build.dir}/xsdv.jar" todir="${lib.dir}/"/>
       <antcall target="cleanClasses"/>
 
