@@ -65,6 +65,9 @@ public class validate {
             }
             catch (SAXParseException ex) {
                 System.out.println(mXMLFileName + " fails to validate because: \n");
+				System.out.println( "column number "+ex.getColumnNumber());
+				System.out.println( "line number "+ex.getLineNumber());
+
                 System.out.println(ex.toString());
                 System.out.println();
             }
