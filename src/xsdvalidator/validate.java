@@ -65,7 +65,7 @@ public class validate {
 
             try {
                 validator.validate(source);
-                System.out.println(mXMLFileName + " validates.");
+                System.out.println(mXMLFileName + " validates");
             }
             catch (SAXParseException ex) {
                 System.out.println(mXMLFileName + " fails to validate because: \n");
@@ -89,6 +89,7 @@ public class validate {
 
         } catch (SAXException sch) {
             System.err.println("Error reading XML Schema: " + mXSDFileName);
+            System.err.println(sch.getMessage());
             System.exit(ERROR_READING_SCHEMA);
         }
 
