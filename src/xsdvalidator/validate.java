@@ -19,7 +19,8 @@ package xsdvalidator;
 
 import java.io.File;
 import java.io.IOException;
-
+import java.net.URL;
+import java.net.MalformedURLException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -52,49 +53,69 @@ public class validate {
         SchemaFactory factory = SchemaFactory.newInstance(
                 "http://www.w3.org/2001/XMLSchema");
             
-
-        File XSDFile = new File(mXSDFileName);
         File XMLFile = new File(mXMLFileName); 
+
+        try { 
+            URL url = testURL(mXSDFileName);
         
-        try {
-            Schema schema = factory.newSchema(XSDFile);
-            Validator validator = schema.newValidator();
-
-            Source source = new StreamSource(XMLFile);
-
-
             try {
-                validator.validate(source);
-                System.out.println(mXMLFileName + " validates");
-            }
-            catch (SAXParseException ex) {
-                System.out.println(mXMLFileName + " fails to validate because: \n");
-                System.out.println(ex.getMessage());
-                System.out.println("At: " + ex.getLineNumber() 
-                        + ":" + ex.getColumnNumber());
-                System.out.println();
-                System.exit(VALIDATION_FAIL);
-            }
-            catch (SAXException ex) {
-                System.out.println(mXMLFileName + " fails to validate because: \n");
-                System.out.println(ex.getMessage());
-                System.out.println();
-                System.exit(VALIDATION_FAIL);
-            }
-            catch (IOException io) {
-                System.err.println("Error reading XML source: " + mXMLFileName);
-                System.err.println(io.getMessage());
-                System.exit(ERROR_READING_XML);
-            }
+                Schema schema = factory.newSchema(url);
+                Validator validator = schema.newValidator();
 
-        } catch (SAXException sch) {
-            System.err.println("Error reading XML Schema: " + mXSDFileName);
-            System.err.println(sch.getMessage());
+                Source source = new StreamSource(XMLFile);
+
+
+                try {
+                    validator.validate(source);
+                    System.out.println(mXMLFileName + " validates");
+                }
+                catch (SAXParseException ex) {
+                    System.out.println(mXMLFileName + " fails to validate because: \n");
+                    System.out.println(ex.getMessage());
+                    System.out.println("At: " + ex.getLineNumber() 
+                            + ":" + ex.getColumnNumber());
+                    System.out.println();
+                    System.exit(VALIDATION_FAIL);
+                }
+                catch (SAXException ex) {
+                    System.out.println(mXMLFileName + " fails to validate because: \n");
+                    System.out.println(ex.getMessage());
+                    System.out.println();
+                    System.exit(VALIDATION_FAIL);
+                }
+                catch (IOException io) {
+                    System.err.println("Error reading XML source: " + mXMLFileName);
+                    System.err.println(io.getMessage());
+                    System.exit(ERROR_READING_XML);
+                }
+
+            } catch (SAXException sch) {
+                System.err.println("Error reading XML Schema: " + mXSDFileName);
+                System.err.println(sch.getMessage());
+                System.exit(ERROR_READING_SCHEMA);
+            }
+        } catch (MalformedURLException e) {
+            System.err.println("Error URL syntax: " + mXSDFileName);
+            System.err.println(e.getMessage());
             System.exit(ERROR_READING_SCHEMA);
         }
 
     }
     
+    /**
+     * Checks the string for having a protocol. 
+     * If the string doesn't start with a protocol then it defaults to 'file:'
+     *
+     * @param args    the URL string
+     * @return        a URL
+     */
+    private static URL testURL(final String url) throws MalformedURLException {
+        try {
+            return new URL(url);
+        } catch (final MalformedURLException e) { }
+        return new URL("file:" + url);
+    }
+
     /**
      * Checks and interprets the command line arguments.
      *
